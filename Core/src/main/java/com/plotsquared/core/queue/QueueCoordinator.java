@@ -28,6 +28,7 @@ package com.plotsquared.core.queue;
 import com.google.inject.Inject;
 import com.plotsquared.core.PlotSquared;
 import com.plotsquared.core.location.Location;
+import com.plotsquared.core.queue.subscriber.ProgressSubscriber;
 import com.plotsquared.core.util.PatternUtil;
 import com.sk89q.jnbt.CompoundTag;
 import com.sk89q.worldedit.entity.Entity;
@@ -276,6 +277,11 @@ public abstract class QueueCoordinator {
      * Set the Consumer that will
      */
     public abstract void setChunkConsumer(@Nonnull Consumer<BlockVector2> consumer);
+
+    /**
+     * Add a {@link ProgressSubscriber} to the Queue to subscribe to the relevant Chunk Processor
+     */
+    public abstract void addProgressSubscriber(@Nonnull ProgressSubscriber progressSubscriber);
 
     /**
      * Fill a cuboid between two positions with a BlockState

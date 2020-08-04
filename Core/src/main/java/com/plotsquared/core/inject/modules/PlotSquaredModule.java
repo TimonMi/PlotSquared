@@ -34,6 +34,7 @@ import com.plotsquared.core.inject.annotations.ImpromptuPipeline;
 import com.plotsquared.core.inject.annotations.WorldConfig;
 import com.plotsquared.core.inject.annotations.WorldFile;
 import com.plotsquared.core.listener.PlotListener;
+import com.plotsquared.core.queue.subscriber.ProgressSubscriber;
 import com.plotsquared.core.util.EventDispatcher;
 import com.plotsquared.core.uuid.UUIDPipeline;
 import com.sk89q.worldedit.WorldEdit;

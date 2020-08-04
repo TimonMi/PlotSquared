@@ -45,7 +45,6 @@ import com.plotsquared.core.util.task.RunnableVal3;
 import com.plotsquared.core.util.task.TaskManager;
 
 import javax.annotation.Nonnull;
-
 import java.util.concurrent.CompletableFuture;
 
 import static com.plotsquared.core.command.SubCommand.sendMessage;
@@ -63,17 +62,16 @@ public class Clear extends Command {
     private final EventDispatcher eventDispatcher;
     private final GlobalBlockQueue blockQueue;
 
-    @Inject public Clear(@Nonnull final EventDispatcher eventDispatcher,
-                         @Nonnull final GlobalBlockQueue blockQueue) {
+    @Inject public Clear(@Nonnull final EventDispatcher eventDispatcher, @Nonnull final GlobalBlockQueue blockQueue) {
         super(MainCommand.getInstance(), true);
         this.eventDispatcher = eventDispatcher;
         this.blockQueue = blockQueue;
     }
 
-    @Override
-    public CompletableFuture<Boolean> execute(final PlotPlayer<?> player, String[] args,
-        RunnableVal3<Command, Runnable, Runnable> confirm,
-        RunnableVal2<Command, CommandResult> whenDone) throws CommandException {
+    @Override public CompletableFuture<Boolean> execute(final PlotPlayer<?> player,
+                                                        String[] args,
+                                                        RunnableVal3<Command, Runnable, Runnable> confirm,
+                                                        RunnableVal2<Command, CommandResult> whenDone) throws CommandException {
         checkTrue(args.length == 0, Captions.COMMAND_SYNTAX, getUsage());
         final Plot plot = check(player.getCurrentPlot(), Captions.NOT_IN_PLOT);
         Result eventResult = this.eventDispatcher.callClear(plot).getEventResult();
@@ -82,12 +80,12 @@ public class Clear extends Command {
             return CompletableFuture.completedFuture(true);
         }
         boolean force = eventResult == Result.FORCE;
-        checkTrue(force || plot.isOwner(player.getUUID()) || Permissions
-                .hasPermission(player, Captions.PERMISSION_ADMIN_COMMAND_CLEAR),
+        checkTrue(force || plot.isOwner(player.getUUID()) || Permissions.hasPermission(player, Captions.PERMISSION_ADMIN_COMMAND_CLEAR),
             Captions.NO_PLOT_PERMS);
         checkTrue(plot.getRunning() == 0, Captions.WAIT_FOR_TIMER);
-        checkTrue(force || !Settings.Done.RESTRICT_BUILDING || !DoneFlag.isDone(plot) || Permissions
-            .hasPermission(player, Captions.PERMISSION_CONTINUE), Captions.DONE_ALREADY_DONE);
+        checkTrue(
+            force || !Settings.Done.RESTRICT_BUILDING || !DoneFlag.isDone(plot) || Permissions.hasPermission(player, Captions.PERMISSION_CONTINUE),
+            Captions.DONE_ALREADY_DONE);
         confirm.run(this, () -> {
             BackupManager.backup(player, plot, () -> {
                 final long start = System.currentTimeMillis();
@@ -97,25 +95,20 @@ public class Clear extends Command {
                         plot.removeRunning();
                         // If the state changes, then mark it as no longer done
                         if (DoneFlag.isDone(plot)) {
-                            PlotFlag<?, ?> plotFlag =
-                                plot.getFlagContainer().getFlag(DoneFlag.class);
-                            PlotFlagRemoveEvent event = this.eventDispatcher
-                                .callFlagRemove(plotFlag, plot);
+                            PlotFlag<?, ?> plotFlag = plot.getFlagContainer().getFlag(DoneFlag.class);
+                            PlotFlagRemoveEvent event = this.eventDispatcher.callFlagRemove(plotFlag, plot);
                             if (event.getEventResult() != Result.DENY) {
                                 plot.removeFlag(event.getFlag());
                             }
                         }
                         if (!plot.getFlag(AnalysisFlag.class).isEmpty()) {
-                            PlotFlag<?, ?> plotFlag =
-                                plot.getFlagContainer().getFlag(AnalysisFlag.class);
-                            PlotFlagRemoveEvent event = this.eventDispatcher
-                                .callFlagRemove(plotFlag, plot);
+                            PlotFlag<?, ?> plotFlag = plot.getFlagContainer().getFlag(AnalysisFlag.class);
+                            PlotFlagRemoveEvent event = this.eventDispatcher.callFlagRemove(plotFlag, plot);
                             if (event.getEventResult() != Result.DENY) {
                                 plot.removeFlag(event.getFlag());
                             }
                         }
-                        MainUtil.sendMessage(player, Captions.CLEARING_DONE,
-                            "" + (System.currentTimeMillis() - start));
+                        MainUtil.sendMessage(player, Captions.CLEARING_DONE, "" + (System.currentTimeMillis() - start));
                     });
                 });
                 if (!result) {
